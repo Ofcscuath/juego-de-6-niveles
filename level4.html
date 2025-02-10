@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nivel 4 - Juego de Adivinanzas</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(45deg, #ff6f61, #ff9a76);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        .question-container, .completion-screen {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+            display: none;
+        }
+        .question-container.active, .completion-screen.active {
+            display: block;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .options button {
+            padding: 10px 15px;
+            font-size: 1.2rem;
+            color: #fff;
+            background: linear-gradient(45deg, #4caf50, #81c784);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .completion-screen button {
+            padding: 10px 15px;
+            font-size: 1.2rem;
+            color: #fff;
+            background: linear-gradient(45deg, #4caf50, #81c784);
+            border: none;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Nivel 4</h1>
+    <div class="question-container active" id="questionContainer">
+        <h2 id="questionText">Pregunta</h2>
+        <div class="options" id="optionsContainer"></div>
+    </div>
+    <div class="completion-screen" id="completionScreen">
+        <h2>¡Felicidades! Has completado el nivel.</h2>
+        <button onclick="retryLevel()">Volver</button>
+        <button onclick="goToNextLevel()">Siguiente</button>
+        <button onclick="goToMenu()">Inicio</button>
+    </div>
+
+    <script>
+        const questions = [
+            { question: "¿Cómo se escribe yo soy en inglés?", options: ["Yo soy", "I soy", "I am", "Yo am"], answer: 2 },
+            { question: "¿Qué significa tree en español?", options: ["Tres", "Casa", "Árbol", "Trigo"], answer: 2 },
+            { question: "¿Cómo se escribe rojo en inglés?", options: ["Ret", "Rojo", "Pet", "Blue", "Red"], answer: 4 },
+            { question: "¿Qué significa Yes en español?", options: ["Sí", "Malo", "Arriba", "Abaji", "Leche"], answer: 0 },
+            { question: "¿Cómo se escribe mal en inglés?", options: ["Happy", "Sweet", "Realy", "Bad", "Hungry"], answer: 3 },
+           { question: "¿Cómo saludo en inglés?", options: ["Hi, I hate you", "Hello, How are you", "I love", "Hello, have you seen?"], answer: 1 },
+           { question: "¿Cómo se dice agua en inglés?", options: ["Milk", "Walter", "Tree", "Juice", "Water"], answer: 4 },
+           { question: "¿Cómo me despido en inglés?", options: ["Bye", "Me despido en inglés", "Hello", "Back"], answer: 0 },
+            { question: "¿Cómo se dice sol en inglés?", options: ["Sky", "Star", "Sol", "Sun"], answer: 3 },
+  { question: "¿Qué significa la palabra cat?", options: ["Dog", "Piraña", "Carro", "Gato", "Luna"], answer: 3 },
+  { question: "¿Cuál es la palabra en inglés para escuela?", options: ["Home", "Study", "Small", "No", "School", "Park"], answer: 4 },
+
+        ];
+
+        const questionContainer = document.getElementById('questionContainer');
+        const completionScreen = document.getElementById('completionScreen');
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+
+        let currentQuestionIndex = 0;
+
+        function loadQuestion() {
+            const question = questions[currentQuestionIndex];
+            questionText.textContent = question.question;
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.onclick = () => checkAnswer(index);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            if (selectedIndex === questions[currentQuestionIndex].answer) {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    loadQuestion();
+                } else {
+                    showCompletionScreen();
+                }
+            } else {
+                alert('Respuesta incorrecta. Intenta de nuevo.');
+            }
+        }
+
+        function showCompletionScreen() {
+            questionContainer.classList.remove('active');
+            completionScreen.classList.add('active');
+        }
+
+        function retryLevel() {
+            currentQuestionIndex = 0;
+            completionScreen.classList.remove('active');
+            questionContainer.classList.add('active');
+            loadQuestion();
+        }
+
+        function goToNextLevel() {
+            window.location.href = 'level5.html';
+        }
+
+        function goToMenu() {
+            window.location.href = 'index.html';
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>

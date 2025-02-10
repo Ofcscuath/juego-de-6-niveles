@@ -1,0 +1,235 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nivel 6 - Juego de Adivinanzas</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(45deg, #ff6f61, #ff9a76);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        h1 {
+            font-size: 3rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            width: 90%;
+            max-width: 600px;
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        .options button, .completion-screen button {
+            padding: 10px 15px;
+            font-size: 1.2rem;
+            color: #fff;
+            background: linear-gradient(45deg, #4caf50, #81c784);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 10px;
+        }
+        .options button:hover, .completion-screen button:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .completion-screen p {
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+        .completion-screen a {
+            color: #ff6f61;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .completion-screen a:hover {
+            text-decoration: underline;
+        }
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Nivel 6</h1>
+
+    <div class="container active" id="questionContainer">
+        <h2 id="questionText">¿Cuál es la capital de Francia?</h2>
+        <div class="options" id="optionsContainer"></div>
+    </div>
+
+    <div class="container completion-screen" id="completionScreen">
+        <h2>¡Felicidades! El juego termina aquí.</h2>
+        <p>Si quieres más juegos o tienes recomendaciones <a href="mailto:tuemail@example.com">escríbeme</a></p>
+        <button onclick="goToMenu()">Volver</button>
+        <button onclick="showAdPopup()">Ganar dinero</button>
+    </div>
+
+    <div class="popup" id="adPopup">
+        <p>¿Quieres ganar dinero? Para hacerlo deberás ver algunos anuncios.</p>
+        <button onclick="acceptAds()">Aceptar</button>
+        <button onclick="closeAdPopup()">Rechazar</button>
+    </div>
+
+    <script>
+        const questionContainer = document.getElementById('questionContainer');
+        const completionScreen = document.getElementById('completionScreen');
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const adPopup = document.getElementById('adPopup');
+
+        let currentQuestionIndex = 0;
+        const questions = [
+         
+               { question: "¿Cuál es la principal función de la socialización?", 
+                options: ["Establecer relaciones laborales", "Formar identidad personal", "Crear conflictos sociales", "Promover competencias entre individuos"], 
+                answer: 1
+            },
+             
+               { question: "¿Qué agente de socialización se caracteriza por influir en creencias y valores desde la infancia?", 
+                options: ["La familia", "La escuela", "Grupos de amigos", "Los medios de comunicación"], 
+                answer: 0
+            },
+             
+               { question: "¿En qué etapa de la vida es más crucial la socialización?", 
+                options: ["Adolescencia", "Adultez", "Infancia", "Vejez", "Nunca"], 
+                answer: 2
+            },
+             
+               { question: "¿Quién es el padre de la sociología?", 
+                options: ["Platón", "Heródoto", "Galileo", "Comte", "Turing"], 
+                answer: 3
+            },
+             
+               { question: "¿Cuál de los siguientes no es un agente de socialización?", 
+                options: ["La genética", "La familia", "La escuela", "Grupo de pares",], 
+                answer: 0
+            },
+            
+               { question: "¿Qué se entiende por socialización anticipatoria?", 
+                options: ["Exclusión social", "Rechazo a la cultura de origen", "Retraimiento social", "Proceso de adaptación a modelos de comportamiento futuro"], 
+                answer: 3
+            },
+            
+               { question: "¿Qué papel juegan los medios de comunicación en la socialización?", 
+                options: ["Aíslan a las personas", "Transmiten normas y valores", "Impiden el desarrollo de la identidad", "No tienen impacto"], 
+                answer: 1
+            },
+             
+               { question: "¿Por qué es importante la socialización en un grupo social?", 
+                options: ["Fomenta el individualismo", "Porque sí", "Promueve la cohesión y el entendimiento", "Aumenta los conflictos", "No tiene importancia"], 
+                answer: 2
+            },
+             
+               { question: "La desocialización es:", 
+                options: ["Un fenómeno raro", "Una grupo de hackers", "Un tipo de socialización positiva", "Hablar con los demás", "Proceso de desaprender valores y comportamientos"], 
+                answer: 4
+            },
+             
+               { question: "¿Qué influencia tiene la cultura en la socialización?", 
+                options: ["Carece de influencia", "Solo afecta a las generaciones jóvenes", "Moldea percepciones y practicas sociales", "Escuchar música gratis"], 
+                answer: 2
+           },
+             
+               { question: "Unos de estos autores no son sociológos", 
+                options: ["Max Weber", "Augusto Comte", "Karl", "Marine Weber", "Heinrich Pestalozzi", "Raul Leis R."], 
+                answer: 4
+          },
+             
+               { question: "¿Cuál de estos es un sociológo?", 
+                options: ["Durkheim", "Mark Zuckerberg", "Nicolás Tesla", "Canserbero", "Manuel Zárate", "María Eugenia Vargas"], 
+                answer: 0
+          },
+             
+               { question: "¿Cuál de estos ejemplos ilustra el proceso de socialización?", 
+                options: ["No formar parte de un grupo", "Aprender a hablar", "Aislarse de los demás", "Rechazar normas culturales", "Enviar mensajes de texto"], 
+                answer: 1
+          },
+             
+               { question: "¿Para qué sirve la sociología?", 
+                options: ["Para entender como se forman los bebés", "Investiga las teorías del arte", "Se centra solamente en la biolgía humana", "Analiza la dinámica de grupos y sociedades", "Investigan los viajes al espacio"], 
+                answer: 3
+            },
+            { question: "¿Cuál es la capital de Francia?", options: ["Madrid", "París", "Roma", "Londres"], answer: 1 },
+            { question: "¿Cuánto es 2 + 2?", options: ["3", "4", "5", "6"], answer: 1 },
+            { question: "¿De qué color es el cielo?", options: ["Verde", "Azul", "Rojo", "Amarillo"], answer: 1 }
+        ];
+
+        function loadQuestion() {
+            const question = questions[currentQuestionIndex];
+            questionText.textContent = question.question;
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.onclick = () => checkAnswer(index);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            const question = questions[currentQuestionIndex];
+            if (selectedIndex === question.answer) {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    loadQuestion();
+                } else {
+                    showCompletionScreen();
+                }
+            } else {
+                alert('Respuesta incorrecta. Intenta de nuevo.');
+            }
+        }
+
+        function showCompletionScreen() {
+            questionContainer.classList.remove('active');
+            completionScreen.classList.add('active');
+        }
+
+        function goToMenu() {
+            window.location.href = 'levels.html';
+        }
+
+        function showAdPopup() {
+            adPopup.style.display = 'block';
+        }
+
+        function closeAdPopup() {
+            adPopup.style.display = 'none';
+        }
+
+        function acceptAds() {
+            closeAdPopup();
+            alert('Mostrando anuncios... (No está disponible en tu región/país)');
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>

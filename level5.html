@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nivel 5 - Juego de Adivinanzas</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(45deg, #ff6f61, #ff9a76);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .question-container, .completion-screen {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+            display: none;
+        }
+        .question-container.active, .completion-screen.active {
+            display: block;
+        }
+        .question-container h2, .completion-screen h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .options button {
+            padding: 10px 15px;
+            font-size: 1.2rem;
+            color: #fff;
+            background: linear-gradient(45deg, #4caf50, #81c784);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .options button:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .completion-screen .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .completion-screen button {
+            padding: 10px 15px;
+            font-size: 1.2rem;
+            color: #fff;
+            background: linear-gradient(45deg, #4caf50, #81c784);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .completion-screen button:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <h1>Nivel 5</h1>
+    <div class="question-container active" id="questionContainer">
+       <h2 id="questionText">¿Cuál es la capital de Francia?</h2>
+        <div class="options" id="optionsContainer"></div>
+    </div>
+
+    <div class="completion-screen" id="completionScreen">
+        <h2>¡Felicidades! Has completado el nivel.</h2>
+        <div class="buttons">
+            <button onclick="retryLevel()">Volver</button>
+            <button onclick="goToNextLevel()">Siguiente</button>
+            <button onclick="goToMenu()">Inicio</button>
+        </div>
+    </div>
+
+    <script>
+        const questionContainer = document.getElementById('questionContainer');
+        const completionScreen = document.getElementById('completionScreen');
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+
+        let currentQuestionIndex = 0;
+
+        const questions = [
+            { 
+                question: "¿Qué significa CPU?", 
+                options: ["Unidad de 	Control Principal", "Procesador de Cálculos Universales", "Unidad de Procesamiento Central", "Computadora Personal Única"], 
+                answer: 2
+            },
+            { 
+                question: "¿Qué es HTML?", 
+                options: ["Lenguaje para crear web", "Un protocolo de Internet", "Un sistema operativo", "Instalador de apps", "Google"], 
+                answer: 0
+            },
+            { 
+                question: "¿Qué empresa creó el sistema operativo Android?", 
+                options: ["Amazon", "Apple", "Microsoft", "Google"], 
+                answer: 3
+            },
+            { 
+                question: "¿Qué lenguaje se utiliza principalmente para crear apps en Android?", 
+                options: ["Python", "Ruby", "Swift", "Java", "Play Store"], 
+                answer: 3
+            },
+            { 
+                question: "¿Qué es un código Qr?", 
+                options: ["Código de barras que almacena información", "Código que descarga música", "Virus informático", "Lenguaje de programación", "Un dispositivo portátil"], 
+                answer: 0
+            },
+            { 
+                question: "¿Cuál es el propósito de una IP?", 
+                options: ["Acelerar una conexión a Internet", "Proteger datos almacenados", "Identificar dispositivos en una red", "Encendido y Apagado", "Es un binario"], 
+                answer: 2
+            },
+            { 
+                question: "¿Qué representa el 1 y el 0 en un sistema binario?", 
+                options: ["Letras y Números", "Encendido y apagado", "Números", "Códigos de seguridad", "Pantalla de un hacker"], 
+                answer: 1
+            },
+            { 
+                question: "Uno de estos es un tipo de virus muy conocido", 
+                options: ["Correo", "Linux", "Covid-19", "Gripe", "Gusanos"], 
+                answer: 4
+            },
+            { 
+                question: "Adware muestra:", 
+                options: ["Llamadas del FBI", "Recopilación de datos", "Anuncios engañosos y no deseados", "Mensajes no deseados"], 
+                answer: 2
+            },
+            { 
+                question: "La marca hp ¿Qué es?", 
+                options: ["Una tableta", "Una grupo de hackers", "Un teléfono", "Un cuaderno", "Una computadora"], 
+                answer: 4
+            },
+            { 
+                question: "¿Para qué sirve Youtube?", 
+                options: ["Para leer libros", "Para comprar artículos", "Para ver vídeos", "Descargar vídeos gratis"], 
+                answer: 2
+           },
+            { 
+                question: "Una de estas Apps funciona para enviar y recibir mensajes", 
+                options: ["WhatsApp", "Youtube", "Free Fire", "Visual Code"], 
+                answer: 0
+          },
+            { 
+                question: "Sirve para realizar búsquedas", 
+                options: ["Mi vecina", "Chrome", "WIFI", "Windows", "3 de noviembre de 1903"], 
+                answer: 1
+          },
+            { 
+                question: "Word sirve para:", 
+                options: ["Ver vídeos", "Descargar imagenes", "Crear y editar textos", "Crear tablas de cálculos", "Enviar mensajes"], 
+                answer: 2
+          },
+            { 
+                question: "¿Word funciona para cualquier dispositivo?", 
+                options: ["No, solamente en Windows 10", "Sí, pero menos en Windows", "¡No!", "Sí", "Solo en teléfonos"], 
+                answer: 3
+            }
+        ];
+
+  function loadQuestion() {
+            const question = questions[currentQuestionIndex];
+            questionText.textContent = question.question;
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.onclick = () => checkAnswer(index);
+                optionsContainer.appendChild(button);
+
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            const question = questions[currentQuestionIndex];
+            if (selectedIndex === question.answer) {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    loadQuestion();
+                } else {
+                    showCompletionScreen();
+                }
+            } else {
+                alert('Respuesta incorrecta. Intenta de nuevo.');
+            }
+        }
+
+        function showCompletionScreen() {
+            questionContainer.classList.remove('active');
+            completionScreen.classList.add('active');
+        }
+
+        function retryLevel() {
+            currentQuestionIndex = 0;
+            completionScreen.classList.remove('active');
+            questionContainer.classList.add('active');
+            loadQuestion();
+        }
+
+        function goToNextLevel() {
+            window.location.href = 'level6.html';
+        }
+
+        function goToMenu() {
+            window.location.href = 'index.html';
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>

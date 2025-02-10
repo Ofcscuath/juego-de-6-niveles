@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nivel 2 - Juego de Adivinanzas</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(45deg, #ff6f61, #ff9a76);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .question-container, .completion-screen {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+            display: none;
+        }
+        .question-container.active, .completion-screen.active {
+            display: block;
+        }
+        .question-container h2, .completion-screen h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .options button {
+            padding: 10px 15px;
+            font-size: 1.2rem;
+            color: #fff;
+            background: linear-gradient(45deg, #4caf50, #81c784);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .options button:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .completion-screen .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .completion-screen button {
+            padding: 10px 15px;
+            font-size: 1.2rem;
+            color: #fff;
+            background: linear-gradient(45deg, #4caf50, #81c784);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .completion-screen button:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <h1>Nivel 2</h1>
+    <div class="question-container active" id="questionContainer">
+       <h2 id="questionText">¿Cuál es la capital de Francia?</h2>
+        <div class="options" id="optionsContainer"></div>
+    </div>
+
+    <div class="completion-screen" id="completionScreen">
+        <h2>¡Felicidades! Has completado el nivel.</h2>
+        <div class="buttons">
+            <button onclick="retryLevel()">Volver</button>
+            <button onclick="goToNextLevel()">Siguiente</button>
+            <button onclick="goToMenu()">Inicio</button>
+        </div>
+    </div>
+
+    <script>
+        const questionContainer = document.getElementById('questionContainer');
+        const completionScreen = document.getElementById('completionScreen');
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+
+        let currentQuestionIndex = 0;
+
+        const questions = [
+            { 
+                question: "¿El Mar Muerto es un mar?", 
+                options: ["No, es una playa", "No, es un lago", "Sí, es un mar", "Todas las mencionadas"], 
+                answer: 1
+            },
+            { 
+                question: "¿Cuánto vale el número pi?", 
+                options: ["1416", "Es infinito", "3.1420", "3.1213", "3.1416"], 
+                answer: 4
+            },
+            { 
+                question: "¿Cuál es el nombre de especie de los seres humanos?", 
+                options: ["Amazonas", "Homo sapiens sapiens", "Homo Háblis", "Homero sapiens"], 
+                answer: 1
+            },
+            { 
+                question: "¿Qué órgano del cuerpo consume más energía?", 
+                options: ["Pulmón", "Riñón", "Mercurio", "Nasa", "Cerebro"], 
+                answer: 4
+            },
+            { 
+                question: "¿Cuántos dientes tiene un humano adulto?", 
+                options: ["1950", "23", "32", "39", "40"], 
+                answer: 2
+            },
+            { 
+                question: "¿Qué gas liberan las plantas al hacer la fotosíntesis?", 
+                options: ["Oxígeno", "Gas superficial", "Gas salva vidas", "Mentiras", "Gas de la naturaleza"], 
+                answer: 0
+            },
+            { 
+                question: "¿Qué moléculas forman el agua?", 
+                options: ["Rómulo y Remo", "Hidrógeno y carbono", "Elio y Magnesio", "Hidrógeno y oxígeno", "Oxígeno y cobre"], 
+                answer: 1
+            },
+            { 
+                question: "¿Cuál es la galaxia más cercana a la nuestra?", 
+                options: ["Orion", "Melanina", "Ozono", "Andrómeda", "Sol"], 
+                answer: 3
+            },
+            { 
+                question: "¿Qué metal está en el centro de la tierra?", 
+                options: ["Hierro", "El planeta rojo", "España", "Lava del Volcán"], 
+                answer: 0
+            },
+            { 
+                question: "¿Cuántos días tiene un año bisiesto?", 
+                options: ["13.800", "12 meses y 10 días", "Casi 8 meses", "366", "365"], 
+                answer: 3
+            },
+            { 
+                question: "¿Quién postuló las leyes del movimiento?", 
+                options: ["Albert Einstein", "Isaac Newton", "El hombre araña", "Georg Simmel"], 
+                answer: 1
+           },
+            { 
+                question: "¿Cómo se llama el estudio de los hongos?", 
+                options: ["Fotosíntesis", "Física", "Micología", "Microbiología"], 
+                answer: 2
+          },
+            { 
+                question: "¿Cuál es el único mamífero capaz de volar?", 
+                options: ["Vaca", "Mosquito", "Aves", "Murciélago", "Gallina"], 
+                answer: 3
+          },
+            { 
+                question: "De los cinco sentidos ¿Cuál se desarrolla primero?", 
+                options: ["El tacto", "Olfato", "Gusto", "Vista", "Ninguna"], 
+                answer: 1
+          },
+            { 
+                question: "¿Cuántos corazones tiene un pulpo?", 
+                options: ["1", "8", "4", "2", "3"], 
+                answer: 4
+            }
+        ];
+
+        function loadQuestion() {
+            const question = questions[currentQuestionIndex];
+            questionText.textContent = question.question;
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.onclick = () => checkAnswer(index);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            const question = questions[currentQuestionIndex];
+            if (selectedIndex === question.answer) {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    loadQuestion();
+                } else {
+                    showCompletionScreen();
+                }
+            } else {
+                alert('Respuesta incorrecta. Intenta de nuevo.');
+            }
+        }
+
+        function showCompletionScreen() {
+            questionContainer.classList.remove('active');
+            completionScreen.classList.add('active');
+        }
+
+        function retryLevel() {
+            currentQuestionIndex = 0;
+            completionScreen.classList.remove('active');
+            questionContainer.classList.add('active');
+            loadQuestion();
+        }
+
+        function goToNextLevel() {
+            window.location.href = 'level3.html';
+        }
+
+        function goToMenu() {
+            window.location.href = 'index.html';
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>

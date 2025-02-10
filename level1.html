@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nivel 1 - Juego de Adivinanzas</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(45deg, #ff6f61, #ff9a76);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        .question-container, .completion-screen {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+            display: none;
+        }
+        .question-container.active, .completion-screen.active {
+            display: block;
+        }
+        .question-container h2, .completion-screen h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .options button, .completion-screen button {
+            padding: 10px 15px;
+            font-size: 1.2rem;
+            color: #fff;
+            background: linear-gradient(45deg, #4caf50, #81c784);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .options button:hover, .completion-screen button:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .completion-screen .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Nivel 1</h1>
+    <div class="question-container active" id="questionContainer">
+        <h2 id="questionText">Pregunta</h2>
+        <div class="options" id="optionsContainer"></div>
+    </div>
+    <div class="completion-screen" id="completionScreen">
+        <h2>¡Felicidades! Has completado el nivel.</h2>
+        <div class="buttons">
+            <button onclick="retryLevel()">Volver a jugar</button>
+            <button onclick="goToNextLevel()">Siguiente Nivel</button>
+            <button onclick="goToMenu()">Menú principal</button>
+        </div>
+    </div>
+
+    <script>
+        const questionContainer = document.getElementById('questionContainer');
+        const completionScreen = document.getElementById('completionScreen');
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+
+        let currentQuestionIndex = 0;
+
+        const questions = [
+            { question: "¿Cuál es la capital de Francia?", options: ["París", "Londres", "Roma", "Madrid"], answer: 0 },
+            { question: "¿Quién escribió 'Don Quijote de la Mancha'?", options: ["Allan Araúz", "Gabriel García Márquez", "Mario Vargas Llosa", "Miguel de Cervantes"], answer: 3 },
+            { question: "¿Cuál es el río más largo del mundo?", options: ["Amazonas", "Nilo", "Yangtsé", "Mississippi"], answer: 0 },
+            { question: "¿Qué planeta es conocido como el planeta rojo?", options: ["Venus", "Marte", "Mercurio", "Júpiter"], answer: 1 },
+            { question: "¿Quién es el padre de la sociología?", options: ["Freddie Mercury", "Augusto Comte", "Leonardo Da Vinci", "Adolf Hittler"], answer: 1 },
+            { question: "Según la leyenda ¿Quiénes fundaron Roma?", options: ["Rómulo y Remo", "Rómulo y Roma", "El dios Júpiter", "Zeús (Grecia)"], answer: 0 },
+            { question: "¿En qué año terminó la Segunda Guerra Mundial?", options: ["1950", "1939", "1945", "1918"], answer: 2 },
+            { question: "¿Quién fue el primer Presidente de Estados Unidos?", options: ["Mao Zedong", "Donald Trump", "Tesla", "George Washington"], answer: 3 },
+            { question: "¿Qué país del mundo produce más vino?", options: ["Turquía", "Italia", "España", "Panamá"], answer: 1 },
+            { question: "¿Qué país es de América Central?", options: ["Panamá", "Japón", "India", "Cuba"], answer: 0 }
+        ];
+
+        function loadQuestion() {
+            const question = questions[currentQuestionIndex];
+            questionText.textContent = question.question;
+            optionsContainer.innerHTML = ''; // Limpia las opciones anteriores
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.onclick = () => checkAnswer(index);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            const question = questions[currentQuestionIndex];
+            if (selectedIndex === question.answer) {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    loadQuestion();
+                } else {
+                    unlockNextLevel();
+                    showCompletionScreen();
+                }
+            } else {
+                alert('Respuesta incorrecta. Intenta de nuevo.');
+            }
+        }
+
+        function unlockNextLevel() {
+            const currentLevel = 1; // Nivel actual
+            let unlockedLevels = parseInt(localStorage.getItem('unlockedLevels')) || 1;
+
+            if (unlockedLevels < currentLevel + 1) {
+                unlockedLevels = currentLevel + 1;
+                localStorage.setItem('unlockedLevels', unlockedLevels);
+            }
+        }
+
+        function showCompletionScreen() {
+            questionContainer.classList.remove('active');
+            completionScreen.classList.add('active');
+        }
+
+        function retryLevel() {
+            currentQuestionIndex = 0;
+            completionScreen.classList.remove('active');
+            questionContainer.classList.add('active');
+            loadQuestion();
+        }
+
+        function goToNextLevel() {
+            window.location.href = 'level2.html';
+        }
+
+        function goToMenu() {
+            window.location.href = 'levels.html';
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>

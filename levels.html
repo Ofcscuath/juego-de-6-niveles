@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Juego de Adivinanzas - Niveles</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    #levelsContainer {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      gap: 15px;
+      padding: 20px;
+      max-width: 100%;
+      max-height: 80vh;
+      margin: 0 auto;
+      overflow-y: auto;
+    }
+    .level {
+      width: 80px;
+      height: 80px;
+      background: #ff6a00;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .level.locked {
+      background: #555;
+      cursor: not-allowed;
+    }
+    .level:hover:not(.locked) {
+      background: #e85d00;
+    }
+  </style>
+</head>
+<body>
+  <div id="levelsContainer"></div>
+
+  <script>
+    const levelsContainer = document.getElementById('levelsContainer');
+
+    // Función para obtener el número de niveles desbloqueados desde localStorage
+    function getUnlockedLevels() {
+      return parseInt(localStorage.getItem('unlockedLevels')) || 1;
+    }
+
+    // Función para cargar los niveles en pantalla
+    function loadLevels() {
+      const unlockedLevels = getUnlockedLevels();
+      levelsContainer.innerHTML = '';
+      for (let i = 1; i <= 6; i++) {
+        const levelDiv = document.createElement('div');
+        levelDiv.classList.add('level');
+        levelDiv.textContent = `Nivel ${i}`;
+        
+        if (i > unlockedLevels) {
+          // Niveles bloqueados
+          levelDiv.classList.add('locked');
+        } else {
+          // Niveles desbloqueados
+          levelDiv.addEventListener('click', () => {
+            window.location.href = `level${i}.html`; // Redirige a la página del nivel
+          });
+        }
+
+        levelsContainer.appendChild(levelDiv);
+      }
+    }
+
+    // Escuchar el evento 'storage' para recargar los niveles si hay cambios en localStorage
+    window.addEventListener('storage', loadLevels);
+
+    // Cargar niveles al iniciar
+    loadLevels();
+  </script>
+</body>
+</html>

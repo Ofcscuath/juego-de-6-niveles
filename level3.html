@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nivel 3 - Juego de Adivinanzas</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(45deg, #ff6f61, #ff9a76);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .question-container, .completion-screen {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+            display: none;
+        }
+        .question-container.active, .completion-screen.active {
+            display: block;
+        }
+        .question-container h2, .completion-screen h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .options button {
+            padding: 10px 15px;
+            font-size: 1.2rem;
+            color: #fff;
+            background: linear-gradient(45deg, #4caf50, #81c784);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .options button:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .completion-screen .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .completion-screen button {
+            padding: 10px 15px;
+            font-size: 1.2rem;
+            color: #fff;
+            background: linear-gradient(45deg, #4caf50, #81c784);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .completion-screen button:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <h1>Nivel 3</h1>
+<p>¡Felicidades! Has alcanzado el nivel 3.</p>
+    <div class="question-container active" id="questionContainer">
+        <h2 id="questionText">¿Cuál es la capital de Francia?</h2>
+        <div class="options" id="optionsContainer"></div>
+    </div>
+
+    <div class="completion-screen" id="completionScreen">
+        <h2>¡Felicidades! Has completado el nivel.</h2>
+        <div class="buttons">
+            <button onclick="retryLevel()">Volver</button>
+            <button onclick="goToNextLevel()">Siguiente</button>
+            <button onclick="goToMenu()">Inicio</button>
+        </div>
+    </div>
+
+    <script>
+        const questionContainer = document.getElementById('questionContainer');
+        const completionScreen = document.getElementById('completionScreen');
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+
+        let currentQuestionIndex = 0;
+
+        const questions = [
+            { 
+                question: "¿Cuándo se firmó el tratado Torrijos Carter?", 
+                options: ["1490", "2024", "1999", "2000", "No existe el tratado"], 
+                answer: 2
+            },
+            { 
+                question: "¿Quiénes iniciaron la Construcción del Canal de Panamá?", 
+                options: ["Panamá", "China", "Colombia", "Estados Unidos", "Francia"], 
+                answer: 4
+            },
+            { 
+                question: "¿En qué continente está Panamá?", 
+                options: ["América", "Asia", "Europa", "África"], 
+                answer: 0
+            },
+            { 
+                question: "Panamá se independizó ¿Cuál de estos países fueron?", 
+                options: ["Panamá y Costa Rica", "Panamá y Venezuela", "Panamá y Estados Unidos", "Panamá y España", "Panamá y Colombia"], 
+                answer: 3
+            },
+            { 
+                question: "El Canal de Panamá acualmente pertenece a:", 
+                options: ["Estados Unidos", "Colombia", "Panamá", "China", "Es internacional"], 
+                answer: 2
+            },
+            { 
+                question: "¿Cuál es la capital de Panamá?", 
+                options: ["Ciudad de Panamá", "San Miguelito", "Ciudad del Istmo", "Ciudad de David"], 
+                answer: 0
+            },
+            { 
+                question: "¿En qué mes se celebran las fiestas patrias en Panamá?", 
+                options: ["Dicembre", "Febrero", "Marzo", "Noviembre", "Todo el año"], 
+                answer: 3
+            },
+            { 
+                question: "¿Cuál es el país vecino de Panamá?", 
+                options: ["Turquía", "Canadá", "Israel", "Brasil", "Colombia"], 
+                answer: 4
+            },
+            { 
+                question: "¿Quién fue el primer presidente de Panamá?", 
+                options: ["Laurentino Cortizo", "Noriega", "Manuel A. Guerrero", "Cristobal Colón"], 
+                answer: 2
+            },
+            { 
+                question: "La apertura del canal fu en el año:", 
+                options: ["1903", "1915", "1916", "1917", "1904"], 
+                answer: 1
+            },
+            { 
+                question: "Se conoce el fallo White en el año:", 
+                options: ["1915", "1940", "1935", "1941"], 
+                answer: 3
+           },
+            { 
+                question: "¿El tratado Victoria-Vélez se firma en el año:?", 
+                options: ["1901", "1915", "1914", "1941"], 
+                answer: 2
+          },
+            { 
+                question: "¿Quién invadió a Panamá en 1921?", 
+                options: ["Estados Unidos", "Colombia", "España", "Inglaterra", "Costa Rica"], 
+                answer: 4
+          },
+            { 
+                question: "¿En qué fecha Costa Rica invadió a Panamá", 
+                options: ["21 de febrero de 1921", "22 de agosto de 1930", "12 de septiembre de 1914", "10 de enero de 1901"], 
+                answer: 0
+          },
+            { 
+                question: "¿Cuál de estas regiones invadieron?", 
+                options: ["Ciudad de Panamá", "Almirante", "Colón", "David", "Federal Mall"], 
+                answer: 1
+            }
+        ];
+
+        function loadQuestion() {
+            const question = questions[currentQuestionIndex];
+            questionText.textContent = question.question;
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.onclick = () => checkAnswer(index);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            const question = questions[currentQuestionIndex];
+            if (selectedIndex === question.answer) {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    loadQuestion();
+                } else {
+                    showCompletionScreen();
+                }
+            } else {
+                alert('Respuesta incorrecta. Intenta de nuevo.');
+            }
+        }
+
+        function showCompletionScreen() {
+            questionContainer.classList.remove('active');
+            completionScreen.classList.add('active');
+        }
+
+        function retryLevel() {
+            currentQuestionIndex = 0;
+            completionScreen.classList.remove('active');
+            questionContainer.classList.add('active');
+            loadQuestion();
+        }
+
+        function goToNextLevel() {
+            window.location.href = 'level4.html';
+        }
+
+        function goToMenu() {
+            window.location.href = 'index.html';
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
